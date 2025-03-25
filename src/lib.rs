@@ -19,6 +19,7 @@ pub struct Args {
     pub type_: String,
 }
 
+/// A command for the shell to perform
 #[derive(Debug)]
 pub enum ShellAction {
     Disk,
@@ -26,6 +27,7 @@ pub enum ShellAction {
     Dir,
 }
 
+/// A configuration for the shell
 #[derive(Debug)]
 pub struct Config {
     pub input_path: Option<PathBuf>,
@@ -52,6 +54,7 @@ impl Config {
     }
 }
 
+/// A disk cluster
 #[derive(Debug)]
 pub enum Cluster {
     EmptyCluster {
@@ -78,6 +81,7 @@ pub enum Cluster {
     },
 }
 
+/// The start of the shell
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     match config.input_path {
         None => println!("stdin"),
