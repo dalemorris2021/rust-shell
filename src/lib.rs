@@ -1,4 +1,10 @@
-use std::{error::Error, fmt::Debug, path::PathBuf};
+use std::{
+    error::Error,
+    fmt::Debug,
+    fs,
+    io::{stdin, Read},
+    path::PathBuf,
+};
 
 use clap::Parser;
 
@@ -83,10 +89,17 @@ pub enum Cluster {
 
 /// The start of the shell
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    match config.input_path {
-        None => println!("stdin"),
-        Some(path) => println!("{}", path.display()),
+    let mut buf = String::new();
+
+    let disk = match config.input_path {
+        Some(path) => fs::read_to_string(path)?,
+        None => {
+            stdin().read_to_string(&mut buf)?;
+            buf
+        }
     };
+
+    println!("{disk}");
 
     match config.action {
         ShellAction::Disk => println!("disk"),
