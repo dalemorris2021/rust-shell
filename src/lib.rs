@@ -104,7 +104,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     match config.action {
         ShellAction::Disk => print_disk(&clusters),
         ShellAction::Type(type_) => println!("type: {type_}"),
-        ShellAction::Dir => println!("dir"),
+        ShellAction::Dir => print_files(&clusters),
     };
 
     Ok(())
@@ -290,6 +290,15 @@ fn print_disk(clusters: &[Cluster]) {
                 )
             }
         };
+    }
+}
+
+fn print_files(clusters: &[Cluster]) {
+    for cluster in clusters {
+        match cluster {
+            Cluster::FileHeader { name, .. } => println!("{name}"),
+            _ => (),
+        }
     }
 }
 
