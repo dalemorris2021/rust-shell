@@ -103,7 +103,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
     match config.action {
         ShellAction::Disk => print_disk(&clusters),
-        ShellAction::Type(type_) => println!("type: {type_}"),
+        ShellAction::Type(type_) => print_content(&clusters, &type_),
         ShellAction::Dir => print_files(&clusters),
     };
 
@@ -291,6 +291,38 @@ fn print_disk(clusters: &[Cluster]) {
             }
         };
     }
+}
+
+fn print_content(clusters: &[Cluster], file_name: &str) {
+    for cluster in clusters {
+        match cluster {
+            Cluster::FileHeader {
+                name,
+                content,
+                next_data,
+                ..
+            } => {
+                if name == file_name {
+                    print!("{content}");
+                    let mut current_data: usize = *next_data;
+                    loop {
+                        if current_data == 0 {
+                            break;
+                        }
+                        match &clusters[current_data] {
+                            Cluster::FileData { content, next_data } => {
+                                print!("{content}");
+                                current_data = *next_data;
+                            }
+                            _ => panic!("expected file data cluster"),
+                        }
+                    }
+                }
+            }
+            _ => (),
+        }
+    }
+    println!();
 }
 
 fn print_files(clusters: &[Cluster]) {
